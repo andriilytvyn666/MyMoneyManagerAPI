@@ -17,18 +17,25 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public User GetUser(Int64 id)
+    public User GetUser([FromRoute] Int64 id)
     {
-        User testUser = new(id, "testuser", "Test User", "supersecret", "example@example.com", UserPrivileges.Regular);
+        User user = new(id, "testuser", "Test User", "supersecret", "example@example.com", UserPrivileges.Regular);
 
-        return testUser;
+        return user;
     }
 
     [HttpPost]
-    public ActionResult<User> PostUser()
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    public ActionResult<User> PostUser([FromBody] User user)
     {
-        User testUser = new(0, "testuser", "Test User", "supersecret", "example@example.com", UserPrivileges.Regular);
+        if (user.UserId == 10)
+        {
+            return BadRequest();
+        }
 
-        return CreatedAtAction(nameof(GetUser), new { id = testUser.UserId }, testUser);
+        return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
     }
 }
