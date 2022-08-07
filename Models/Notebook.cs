@@ -1,19 +1,24 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace mymoneymanager_api.Models;
+namespace MyMoneyManagerApi.Models;
 
 public class Notebook
 {
+    [Key]
     [Required]
     public Int64 NotebookId { get; set; }
 
     [Required]
+    public User User { get; set; } = new();
+
+    [Required]
     public Int64 UserId { get; set; }
 
+    [Required]
     [MinLength(4)]
     [MaxLength(32)]
-    [Required]
-    public String Name { get; set; }
+    public String Name { get; set; } = String.Empty;
 
     [Required]
     public Decimal Amount { get; set; }
@@ -21,21 +26,7 @@ public class Notebook
     [Required]
     public DateTime DateTimeCreated { get; set; }
 
-    public Notebook()
-    {
-        NotebookId = default;
-        UserId = default;
-        Name = "0000";
-        Amount = default;
-        DateTimeCreated = default;
-    }
-
-    public Notebook(Int64 notebookId, Int64 userId, String name, Decimal amount, DateTime dateTimeCreated)
-    {
-        NotebookId = notebookId;
-        UserId = userId;
-        Name = name;
-        Amount = amount;
-        DateTimeCreated = dateTimeCreated;
-    }
+    [Required]
+    [InverseProperty("Notebook")]
+    public List<Operation> Operations { get; } = new();
 }

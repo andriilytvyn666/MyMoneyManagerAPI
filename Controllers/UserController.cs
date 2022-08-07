@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using mymoneymanager_api.Models;
+using MyMoneyManagerApi.Models;
 using System.Net.Mime;
 
-namespace mymoneymanager_api.Controllers;
+namespace MyMoneyManagerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -17,11 +17,39 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public User GetUser([FromRoute] Int64 id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<User> GetUser([FromRoute] Int64 id)
     {
-        User user = new(id, "testuser", "Test User", "supersecret", "example@example.com", UserPrivileges.Regular);
+        User user;
+
+        using (DatabaseContext db = new())
+        {
+            try
+            {
+                user = db.Users.Where(user => user.UserId == id).First();
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
 
         return user;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult<List<User>> GetUsers()
+    {
+        List<User> users;
+
+        using (DatabaseContext db = new())
+        {
+            users = db.Users.ToList();
+        }
+
+        return users;
     }
 
     [HttpPost]
@@ -31,9 +59,10 @@ public class UserController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     public ActionResult<User> PostUser([FromBody] User user)
     {
-        if (user.UserId == 10)
+        using (DatabaseContext db = new())
         {
-            return BadRequest();
+            db.Add(user);
+            db.SaveChanges();
         }
 
         return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);

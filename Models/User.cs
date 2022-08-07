@@ -1,54 +1,41 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace mymoneymanager_api.Models;
+namespace MyMoneyManagerApi.Models;
 
 public enum UserPrivileges { Admin, Regular };
 
 public class User
 {
+    [Key]
     [Required]
+    [ForeignKey("UserId")]
     public Int64 UserId { get; set; }
 
+    [Required]
     [MinLength(4)]
     [MaxLength(16)]
-    [Required]
-    public String UserName { get; set; }
+    public String UserName { get; set; } = String.Empty;
 
+    [Required]
     [MinLength(4)]
     [MaxLength(32)]
-    [Required]
-    public String FullName { get; set; }
+    public String FullName { get; set; } = String.Empty;
 
+    [Required]
     [MinLength(8)]
     [MaxLength(64)]
-    [Required]
-    public String Password { get; set; }
+    public String Password { get; set; } = String.Empty;
 
+    [Required]
     [EmailAddress]
-    [Required]
-    public String Email { get; set; }
+    public String Email { get; set; } = String.Empty;
 
-    [EnumDataType(typeof(UserPrivileges))]
     [Required]
+    [EnumDataType(typeof(UserPrivileges))]
     public UserPrivileges Privileges { get; set; }
 
-    public User()
-    {
-        UserId = default;
-        UserName = "0000";
-        FullName = "0000";
-        Password = "00000000";
-        Email = "example@example.com";
-        Privileges = default;
-    }
-
-    public User(Int64 userId, String userName, String fullName, String password, String email, UserPrivileges privileges)
-    {
-        UserId = userId;
-        UserName = userName;
-        FullName = fullName;
-        Password = password;
-        Email = email;
-        Privileges = privileges;
-    }
+    [Required]
+    [InverseProperty("User")]
+    public List<Notebook> Notebooks { get; } = new();
 }

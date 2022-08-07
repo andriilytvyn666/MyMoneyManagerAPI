@@ -1,22 +1,26 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace mymoneymanager_api.Models;
+namespace MyMoneyManagerApi.Models;
 
 public enum OperationType { Expense, Income }
 public enum OperationCategory { Food, Transport, Entertainment }
 
 public class Operation
 {
+    [Key]
     [Required]
     public Int64 OperationId { get; set; }
 
     [Required]
     public Int64 NotebookId { get; set; }
 
+    [Required]
+    public Notebook Notebook { get; set; } = new();
+
+    [Required]
     [MinLength(4)]
     [MaxLength(32)]
-    [Required]
-    public String Name { get; set; }
+    public String Name { get; set; } = String.Empty;
 
     [Required]
     public Decimal Amount { get; set; }
@@ -24,33 +28,11 @@ public class Operation
     [Required]
     public DateOnly Date { get; set; }
 
-    [EnumDataType(typeof(OperationType))]
     [Required]
+    [EnumDataType(typeof(OperationType))]
     public OperationType Type { get; set; }
 
-    [EnumDataType(typeof(OperationCategory))]
     [Required]
+    [EnumDataType(typeof(OperationCategory))]
     public OperationCategory Category { get; set; }
-
-    public Operation()
-    {
-        OperationId = default;
-        NotebookId = default;
-        Name = "0000";
-        Amount = default;
-        Date = default;
-        Type = default;
-        Category = default;
-    }
-
-    public Operation(Int64 operationId, Int64 notebookId, String name, Decimal amount, DateOnly date, OperationType type, OperationCategory category)
-    {
-        OperationId = operationId;
-        NotebookId = notebookId;
-        Name = name;
-        Amount = amount;
-        Date = date;
-        Type = type;
-        Category = category;
-    }
 }
