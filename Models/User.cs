@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyMoneyManagerApi.Models;
 
@@ -27,6 +28,7 @@ public class User
     /// </summary>
     [Key]
     [Required]
+    [JsonIgnore]
     public Int64 UserId { get; set; }
 
     /// <summary>

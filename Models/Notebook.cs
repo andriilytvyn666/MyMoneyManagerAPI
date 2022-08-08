@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyMoneyManagerApi.Models;
 
@@ -12,6 +13,7 @@ public class Notebook
     /// </summary>
     [Key]
     [Required]
+    [JsonIgnore]
     public Int64 NotebookId { get; set; }
 
     /// <summary>

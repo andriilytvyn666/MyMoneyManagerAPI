@@ -8,15 +8,37 @@ namespace MyMoneyManagerApi.Controllers;
 /// User API controller
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/user/")]
 [Produces(MediaTypeNames.Application.Json)]
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
 
+    /// <summary>
+    /// UserController contsructor
+    /// </summary>
     public UserController(ILogger<UserController> logger)
     {
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Create User
+    /// </summary>
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    public ActionResult<User> CreateUser([FromBody] User user)
+    {
+        using (DatabaseContext db = new())
+        {
+            db.Add(user);
+            db.SaveChanges();
+        }
+
+        return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
     }
 
     /// <summary>
@@ -46,51 +68,6 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Create Notebook
-    /// </summary>
-    [HttpPost("Notebook")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [Consumes(MediaTypeNames.Application.Json)]
-    public ActionResult<Notebook> CreateNotebook([FromBody] Notebook notebook)
-    {
-        using (DatabaseContext db = new())
-        {
-            db.Notebooks.Add(notebook);
-            db.SaveChanges();
-        }
-
-        return CreatedAtAction(nameof(GetNotebook), new { id = notebook.NotebookId }, notebook);
-    }
-
-    /// <summary>
-    /// Get Notebook by its Id
-    /// </summary>
-    [HttpGet("Notebook/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<Notebook> GetNotebook([FromRoute] Int64 id)
-    {
-        Notebook notebook;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return notebook;
-    }
-
-    /// <summary>
     /// Get Users list
     /// </summary>
     [HttpGet]
@@ -108,21 +85,65 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Create User
+    /// Update User
     /// </summary>
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [Consumes(MediaTypeNames.Application.Json)]
-    public ActionResult<User> CreateUser([FromBody] User user)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<User> UpdateUser([FromRoute] Int64 id, [FromBody] User user)
     {
         using (DatabaseContext db = new())
         {
-            db.Add(user);
+            User currentUser;
+
+            try
+            {
+                currentUser = db.Users.Where(user => user.UserId == id).First();
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+
+            currentUser.UserName = user.UserName;
+            currentUser.Email = user.Email;
+            currentUser.Password = user.Password;
+            currentUser.FullName = user.FullName;
+            currentUser.Privileges = user.Privileges;
+
             db.SaveChanges();
         }
 
-        return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+
+        return user;
+    }
+
+    /// <summary>
+    /// Delete User
+    /// </summary>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<User> DeleteUser([FromRoute] Int64 id)
+    {
+        User user;
+
+        using (DatabaseContext db = new())
+        {
+            try
+            {
+                user = db.Users.Where(user => user.UserId == id).First();
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+
+            db.Remove(user);
+            db.SaveChanges();
+        }
+
+        return user;
     }
 }

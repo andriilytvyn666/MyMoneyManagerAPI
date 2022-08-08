@@ -21,11 +21,17 @@ public class DatabaseContext : DbContext
     /// </summary>
     public DbSet<Operation> Operations { get; set; }
 
+    /// <summary>
+    /// On database configuring event
+    /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.UseSqlite("Data Source=./app.db");
     }
 
+    /// <summary>
+    /// On model creating event
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Notebook>().HasOne<User>().WithMany().HasForeignKey(n => n.UserId);
