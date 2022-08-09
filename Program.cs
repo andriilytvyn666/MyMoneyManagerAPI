@@ -1,5 +1,7 @@
-using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Any;
+using System.Text.Json.Serialization;
 
 namespace MyMoneyManagerApi;
 
@@ -15,10 +17,21 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
+            c.MapType<DateOnly>(() => new OpenApiSchema
+            {
+                Type = "string",
+                Format = "date",
+                Example = new OpenApiString("2022-01-01")
+            });
+
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "My Money Manager API",

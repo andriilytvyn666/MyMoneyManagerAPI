@@ -1,4 +1,7 @@
 obj
 bin
 .nuget
+
 app.db
+app.db-shm
+app.db-wal

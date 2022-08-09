@@ -5,96 +5,66 @@ using System.Net.Mime;
 namespace MyMoneyManagerApi.Controllers;
 
 /// <summary>
-/// Notebook API controller
+/// Operation API controller
 /// </summary>
 [ApiController]
-[Route("api/notebook")]
+[Route("api/operation")]
 [Produces(MediaTypeNames.Application.Json)]
-public class NotebookController : ControllerBase
+public class OperationController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
 
     /// <summary>
-    /// NotebookController contsructor
+    /// OperationController contsructor
     /// </summary>
-    public NotebookController(ILogger<UserController> logger)
+    public OperationController(ILogger<UserController> logger)
     {
         _logger = logger;
     }
 
     /// <summary>
-    /// Create Notebook
+    /// Add Operation to Notebook
     /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Produces(MediaTypeNames.Application.Json)]
-    [Consumes(MediaTypeNames.Application.Json)]
-    public ActionResult<Notebook> CreateNotebook([FromBody] Notebook notebook)
+    public ActionResult<Operation> AddOperation([FromBody] Operation operation)
     {
-        User user;
+        Notebook notebook;
 
         using (DatabaseContext db = new())
         {
             try
             {
-                user = db.Users.Where(user => user.UserId == notebook.UserId).First();
+                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == operation.NotebookId).First();
             }
             catch (InvalidOperationException)
             {
                 return BadRequest();
             }
 
-            db.Notebooks.Add(notebook);
+            db.Operations.Add(operation);
             db.SaveChanges();
         }
-
-        return CreatedAtAction(nameof(GetNotebook), new { id = notebook.NotebookId }, notebook);
+        return CreatedAtAction(nameof(GetOperation), new { id = operation.OperationId }, operation);
     }
 
     /// <summary>
-    /// Get Notebooks list by UserId
-    /// </summary>
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<List<Notebook>> GetNotebooksList([FromQuery] Int64 userId)
-    {
-        List<Notebook> notebooks;
-
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebooks = db.Notebooks.Where(notebook => notebook.UserId == userId).ToList();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return notebooks;
-    }
-
-    /// <summary>
-    /// Get Notebook by its NotebookId
+    /// Get Operation by its OperationId
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<Notebook> GetNotebook([FromRoute] Int64 id)
+    public ActionResult<Operation> GetOperation([FromRoute] Int64 id)
     {
-        Notebook notebook;
+        Operation operation;
 
         using (DatabaseContext db = new())
         {
             try
             {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
+                operation = db.Operations.Where(operation => operation.OperationId == id).First();
             }
             catch (InvalidOperationException)
             {
@@ -102,67 +72,98 @@ public class NotebookController : ControllerBase
             }
         }
 
-        return notebook;
+        return operation;
     }
 
     /// <summary>
-    /// Update Notebook
+    /// Get Operations list by NotebookId
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public ActionResult<List<Operation>> GetOperationsList([FromQuery] Int64 notebookId)
+    {
+        List<Operation> operations;
+
+
+        using (DatabaseContext db = new())
+        {
+            try
+            {
+                operations = db.Operations.Where(operation => operation.NotebookId == notebookId).ToList();
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
+
+        return operations;
+    }
+
+    /// <summary>
+    /// Update Operation
     /// </summary>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Notebook> UpdateNotebook([FromRoute] Int64 id, [FromBody] Notebook notebook)
+    public ActionResult<Operation> UpdateOperation([FromRoute] Int64 id, [FromBody] Operation operation)
     {
+        Operation currentOperation;
+
         using (DatabaseContext db = new())
         {
-            Notebook currentNotebook;
 
             try
             {
-                currentNotebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
+                currentOperation = db.Operations.Where(operation => operation.OperationId == id).First();
             }
             catch (InvalidOperationException)
             {
                 return NotFound();
+
+
             }
 
-            currentNotebook.UserId = notebook.UserId;
-            currentNotebook.Name = notebook.Name;
-            currentNotebook.Amount = notebook.Amount;
+            currentOperation.Name = operation.Name;
+            currentOperation.Date = operation.Date;
+            currentOperation.Amount = operation.Amount;
+            currentOperation.Type = operation.Type;
+            currentOperation.Category = operation.Category;
 
             db.SaveChanges();
         }
 
-
-        return notebook;
+        return operation;
     }
 
     /// <summary>
-    /// Delete Notebook
+    /// Remove Operation from Notebook 
     /// </summary>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Notebook> DeleteNotebook([FromRoute] Int64 id)
+    public ActionResult<Operation> RemoveOperation([FromRoute] Int64 id)
     {
-        Notebook notebook;
+        Operation operation;
 
         using (DatabaseContext db = new())
         {
             try
             {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
+                operation = db.Operations.Where(operation => operation.OperationId == id).First();
             }
             catch (InvalidOperationException)
             {
                 return NotFound();
             }
 
-            db.Remove(notebook);
+            db.Remove(operation);
             db.SaveChanges();
         }
 
-        return notebook;
+        return operation;
     }
 }

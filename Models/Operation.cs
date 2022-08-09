@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace MyMoneyManagerApi.Models;
 
@@ -33,7 +32,6 @@ public class Operation
     /// </summary>
     [Key]
     [Required]
-    [JsonIgnore]
     public Int64 OperationId { get; set; }
 
     /// <summary>
