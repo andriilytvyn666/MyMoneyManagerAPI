@@ -5,3 +5,6 @@ bin
 app.db
 app.db-shm
 app.db-wal
+
+# temp
+Migrations
