@@ -6,7 +6,7 @@ namespace MyMoneyManagerApi;
 /// <summary>
 /// Database context configuration class
 /// </summary>
-public class DatabaseContext : DbContext
+public class SqliteDbContext : DbContext
 {
     /// <summary>
     /// Users list representation
