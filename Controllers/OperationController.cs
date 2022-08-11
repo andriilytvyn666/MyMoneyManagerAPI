@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using MyMoneyManagerApi.Models;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
+using MyMoneyManagerApi.Interfaces;
+using MyMoneyManagerApi.Models;
+using MyMoneyManagerApi.Services;
 
 namespace MyMoneyManagerApi.Controllers;
 
@@ -13,13 +15,12 @@ namespace MyMoneyManagerApi.Controllers;
 public class OperationController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
+    private readonly IOperationService _operationService;
 
-    /// <summary>
-    /// OperationController contsructor
-    /// </summary>
     public OperationController(ILogger<UserController> logger)
     {
         _logger = logger;
+        _operationService = OperationService.Instance;
     }
 
     /// <summary>
@@ -30,27 +31,12 @@ public class OperationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult<Operation> AddOperation([FromBody] Operation operation)
     {
-        Notebook notebook;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == operation.NotebookId).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest();
-            }
-
-            db.Operations.Add(operation);
-            db.SaveChanges();
-        }
+        Operation createdOperation = _operationService.Create(operation);
         return CreatedAtAction(nameof(GetOperation), new { id = operation.OperationId }, operation);
     }
 
     /// <summary>
-    /// Get Operation by its OperationId
+    /// Get Operation by OperationId
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -58,21 +44,7 @@ public class OperationController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public ActionResult<Operation> GetOperation([FromRoute] Int64 id)
     {
-        Operation operation;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                operation = db.Operations.Where(operation => operation.OperationId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return operation;
+        return _operationService.Read(id);
     }
 
     /// <summary>
@@ -82,24 +54,9 @@ public class OperationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<List<Operation>> GetOperationsList([FromQuery] Int64 notebookId)
+    public ActionResult<List<Operation>> GetOperationsList([FromQuery] Int64 id)
     {
-        List<Operation> operations;
-
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                operations = db.Operations.Where(operation => operation.NotebookId == notebookId).ToList();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return operations;
+        return _operationService.GetOperationsList(id);
     }
 
     /// <summary>
@@ -111,32 +68,8 @@ public class OperationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<Operation> UpdateOperation([FromRoute] Int64 id, [FromBody] Operation operation)
     {
-        Operation currentOperation;
-
-        using (DatabaseContext db = new())
-        {
-
-            try
-            {
-                currentOperation = db.Operations.Where(operation => operation.OperationId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-
-
-            }
-
-            currentOperation.Name = operation.Name;
-            currentOperation.Date = operation.Date;
-            currentOperation.Amount = operation.Amount;
-            currentOperation.Type = operation.Type;
-            currentOperation.Category = operation.Category;
-
-            db.SaveChanges();
-        }
-
-        return operation;
+        operation.OperationId = id;
+        return _operationService.Update(operation);
     }
 
     /// <summary>
@@ -147,23 +80,7 @@ public class OperationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<Operation> RemoveOperation([FromRoute] Int64 id)
     {
-        Operation operation;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                operation = db.Operations.Where(operation => operation.OperationId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-
-            db.Remove(operation);
-            db.SaveChanges();
-        }
-
-        return operation;
+        Operation operationToDelete = _operationService.Read(id);
+        return _operationService.Delete(operationToDelete);
     }
 }

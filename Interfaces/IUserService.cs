@@ -10,4 +10,6 @@ interface IUserService
     public User Read(String userName);
     public User Update(User user);
     public User Delete(User user);
+
+    public List<User> GetUsersList();
 }

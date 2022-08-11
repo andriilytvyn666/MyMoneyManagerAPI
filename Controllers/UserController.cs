@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-
-using MyMoneyManagerApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using MyMoneyManagerApi.Interfaces;
+using MyMoneyManagerApi.Models;
 using MyMoneyManagerApi.Services;
 
 namespace MyMoneyManagerApi.Controllers;
@@ -18,9 +17,6 @@ public class UserController : ControllerBase
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
 
-    /// <summary>
-    /// UserController contsructor
-    /// </summary>
     public UserController(ILogger<UserController> logger)
     {
         _logger = logger;
@@ -54,12 +50,25 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// Get Users list
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public ActionResult<List<User>> GetUsersList()
+    {
+        return _userService.GetUsersList();
+    }
+
+    /// <summary>
     /// Update User
     /// </summary>
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
     public ActionResult<User> UpdateUser([FromRoute] Int64 id, [FromBody] User user)
     {
         user.UserId = id;
@@ -72,6 +81,7 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces(MediaTypeNames.Application.Json)]
     public ActionResult<User> DeleteUser([FromRoute] Int64 id)
     {
         User user = _userService.Read(id);

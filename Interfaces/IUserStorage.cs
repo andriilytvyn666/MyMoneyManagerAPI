@@ -8,5 +8,7 @@ public interface IUserStorage
     public User Read(Int64 userId);
     public User Read(String userName);
     public User Update(User user);
-    public User Delete(User user);
+    public User Delete(Int64 userId);
+
+    public List<User> GetUsersList();
 }
