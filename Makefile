@@ -2,7 +2,7 @@
 	@ASPNETCORE_ENVIRONMENT=Development \
 	DOTNET_WATCH_RESTART_ON_RUDE_EDIT=true \
 	DOTNET_WATCH_SUPPRESS_EMOJIS=true \
-	dotnet watch
+	dotnet watch --project MyMoneyManager.Api
 
 ef:
 	@rm -rf Migrations
