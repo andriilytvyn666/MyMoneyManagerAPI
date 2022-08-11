@@ -5,7 +5,10 @@
 	dotnet watch --project MyMoneyManager.Api
 
 ef:
-	@rm -rf Migrations
-	@dotnet ef migrations add "Test Migration"
-	@dotnet ef database drop
-	@dotnet ef database update
+	@rm -rf MyMoneyManager.Api/Migrations
+	@dotnet ef migrations add "Test Migration" --project MyMoneyManager.Api
+	@dotnet ef database drop --project MyMoneyManager.Api
+	@dotnet ef database update --project MyMoneyManager.Api
+
+test:
+	dotnet test MyMoneyManager.Api.Tests
