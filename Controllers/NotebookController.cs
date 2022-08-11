@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using MyMoneyManagerApi.Models;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc;
+using MyMoneyManagerApi.Interfaces;
+using MyMoneyManagerApi.Models;
+using MyMoneyManagerApi.Services;
 
 namespace MyMoneyManagerApi.Controllers;
 
@@ -13,13 +15,12 @@ namespace MyMoneyManagerApi.Controllers;
 public class NotebookController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
+    private readonly INotebookService _notebookService;
 
-    /// <summary>
-    /// NotebookController contsructor
-    /// </summary>
     public NotebookController(ILogger<UserController> logger)
     {
         _logger = logger;
+        _notebookService = NotebookService.Instance;
     }
 
     /// <summary>
@@ -32,24 +33,8 @@ public class NotebookController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     public ActionResult<Notebook> CreateNotebook([FromBody] Notebook notebook)
     {
-        User user;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                user = db.Users.Where(user => user.UserId == notebook.UserId).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest();
-            }
-
-            db.Notebooks.Add(notebook);
-            db.SaveChanges();
-        }
-
-        return CreatedAtAction(nameof(GetNotebook), new { id = notebook.NotebookId }, notebook);
+        Notebook createdNotebook = _notebookService.Create(notebook);
+        return CreatedAtAction(nameof(GetNotebook), new { id = createdNotebook.NotebookId }, createdNotebook);
     }
 
     /// <summary>
@@ -61,22 +46,7 @@ public class NotebookController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public ActionResult<List<Notebook>> GetNotebooksList([FromQuery] Int64 userId)
     {
-        List<Notebook> notebooks;
-
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebooks = db.Notebooks.Where(notebook => notebook.UserId == userId).ToList();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return notebooks;
+        return _notebookService.GetNotebooksList(userId);
     }
 
     /// <summary>
@@ -88,21 +58,7 @@ public class NotebookController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public ActionResult<Notebook> GetNotebook([FromRoute] Int64 id)
     {
-        Notebook notebook;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        return notebook;
+        return _notebookService.Read(id);
     }
 
     /// <summary>
@@ -112,30 +68,10 @@ public class NotebookController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Notebook> UpdateNotebook([FromRoute] Int64 id, [FromBody] Notebook notebook)
+    public ActionResult<Notebook> UpdateNotebook([FromRoute] Int64 notebookId, [FromBody] Notebook notebook)
     {
-        using (DatabaseContext db = new())
-        {
-            Notebook currentNotebook;
-
-            try
-            {
-                currentNotebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-
-            currentNotebook.UserId = notebook.UserId;
-            currentNotebook.Name = notebook.Name;
-            currentNotebook.Amount = notebook.Amount;
-
-            db.SaveChanges();
-        }
-
-
-        return notebook;
+        notebook.NotebookId = notebookId;
+        return _notebookService.Update(notebook);
     }
 
     /// <summary>
@@ -144,25 +80,9 @@ public class NotebookController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Notebook> DeleteNotebook([FromRoute] Int64 id)
+    public ActionResult<Notebook> DeleteNotebook([FromRoute] Int64 notebookId)
     {
-        Notebook notebook;
-
-        using (DatabaseContext db = new())
-        {
-            try
-            {
-                notebook = db.Notebooks.Where(notebook => notebook.NotebookId == id).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-
-            db.Remove(notebook);
-            db.SaveChanges();
-        }
-
-        return notebook;
+        Notebook notebookToDelete = _notebookService.Read(notebookId);
+        return _notebookService.Delete(notebookToDelete);
     }
 }

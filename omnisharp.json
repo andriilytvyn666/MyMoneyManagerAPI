@@ -1,0 +1,10 @@
+{
+  "FormattingOptions": {
+    "OrganizeImports": true,
+    "NewLine": "\n",
+    "UseTabs": false,
+    "TabSize": 4,
+    "IndentationSize": 4,
+    "IndentBraces": false
+  }
+}
