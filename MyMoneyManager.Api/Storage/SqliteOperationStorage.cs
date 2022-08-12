@@ -6,22 +6,23 @@ namespace MyMoneyManager.Api.Storage;
 // TODO: Make all methods async
 public class SqliteOperationStorage : IOperationStorage
 {
-    private SqliteDbContext _db;
-    private static readonly Lazy<SqliteOperationStorage> _lazy = new(() => new());
-    public static SqliteOperationStorage Instance { get { return _lazy.Value; } }
+    private IServiceScopeFactory _scopeFactory;
 
-    private SqliteOperationStorage()
+    public SqliteOperationStorage(IServiceScopeFactory scopeFactory)
     {
-        _db = new();
+        _scopeFactory = scopeFactory;
     }
 
     public Operation Create(Operation operation)
     {
         Operation createdOperation;
 
-        // TODO: Throw exception when operation with same OperationId already exists
-        createdOperation = _db.Add(operation).Entity;
-        _db.SaveChanges();
+        using (ApplicationDbContext _db = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>())
+        {
+            // TODO: Throw exception when operation with same OperationId already exists
+            createdOperation = _db.Add(operation).Entity;
+            _db.SaveChanges();
+        }
 
         return createdOperation;
     }
@@ -30,8 +31,11 @@ public class SqliteOperationStorage : IOperationStorage
     {
 
         Operation operation;
+        using (ApplicationDbContext _db = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>())
+        {
 
-        operation = _db.Operations.Single(x => x.OperationId == operationId);
+            operation = _db.Operations.Single(x => x.OperationId == operationId);
+        }
 
         return operation;
     }
@@ -39,32 +43,41 @@ public class SqliteOperationStorage : IOperationStorage
     public Operation Update(Operation operation)
     {
         Operation updatedOperation;
+        using (ApplicationDbContext _db = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>())
+        {
 
-        updatedOperation = _db.Operations.First(x => x.OperationId == operation.OperationId);
+            updatedOperation = _db.Operations.First(x => x.OperationId == operation.OperationId);
 
-        // TODO: Throw exception when OperationId is changed
-        updatedOperation.Name = operation.Name;
-        updatedOperation.Amount = operation.Amount;
-        updatedOperation.Type = operation.Type;
-        updatedOperation.Category = operation.Category;
+            // TODO: Throw exception when OperationId is changed
+            updatedOperation.Name = operation.Name;
+            updatedOperation.Amount = operation.Amount;
+            updatedOperation.Type = operation.Type;
+            updatedOperation.Category = operation.Category;
 
-        _db.SaveChanges();
+            _db.SaveChanges();
+        }
 
         return updatedOperation;
     }
 
     public Operation Delete(Int64 operationId)
     {
-        // TODO: Throw exception when Operation is not found
-        Operation operationToDelete = _db.Operations.First(x => x.OperationId == operationId);
-        Operation deletedOperation = _db.Remove(operationToDelete).Entity;
-        _db.SaveChanges();
+        using (ApplicationDbContext _db = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>())
+        {
+            // TODO: Throw exception when Operation is not found
+            Operation operationToDelete = _db.Operations.First(x => x.OperationId == operationId);
+            Operation deletedOperation = _db.Remove(operationToDelete).Entity;
+            _db.SaveChanges();
 
-        return deletedOperation;
+            return deletedOperation;
+        }
     }
 
     public List<Operation> GetOperationsList(Int64 notebookId)
     {
-        return _db.Operations.Where(x => x.NotebookId == notebookId).ToList();
+        using (ApplicationDbContext _db = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>())
+        {
+            return _db.Operations.Where(x => x.NotebookId == notebookId).ToList();
+        }
     }
 }

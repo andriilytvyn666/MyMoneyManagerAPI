@@ -1,23 +1,20 @@
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Storage;
 
 namespace MyMoneyManager.Api.Services;
 
 public class UserService : IUserService
 {
-    private IUserStorage _storage;
-    private static readonly Lazy<UserService> _lazy = new(() => new());
-    public static UserService Instance { get { return _lazy.Value; } }
+    private IUserStorage _userStorage;
 
-    private UserService()
+    public UserService(IUserStorage userStorage)
     {
-        _storage = SqliteUserStorage.Instance;
+        _userStorage = userStorage;
     }
 
     public User Create(User user)
     {
-        return _storage.Create(user);
+        return _userStorage.Create(user);
     }
 
     public User Read(User user)
@@ -27,26 +24,26 @@ public class UserService : IUserService
 
     public User Read(String userName)
     {
-        return _storage.Read(userName);
+        return _userStorage.Read(userName);
     }
 
     public User Read(Int64 userId)
     {
-        return _storage.Read(userId);
+        return _userStorage.Read(userId);
     }
 
     public User Update(User user)
     {
-        return _storage.Update(user);
+        return _userStorage.Update(user);
     }
 
     public User Delete(User user)
     {
-        return _storage.Delete(user.UserId);
+        return _userStorage.Delete(user.UserId);
     }
 
     public List<User> GetUsersList()
     {
-        return _storage.GetUsersList();
+        return _userStorage.GetUsersList();
     }
 }

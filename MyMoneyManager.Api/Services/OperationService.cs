@@ -1,18 +1,15 @@
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Storage;
 
 namespace MyMoneyManager.Api.Services;
 
 public class OperationService : IOperationService
 {
     private IOperationStorage _storage;
-    private static readonly Lazy<OperationService> _lazy = new(() => new());
-    public static OperationService Instance { get { return _lazy.Value; } }
 
-    private OperationService()
+    public OperationService(IOperationStorage operationService)
     {
-        _storage = SqliteOperationStorage.Instance;
+        _storage = operationService;
     }
 
     public Operation Create(Operation operation)

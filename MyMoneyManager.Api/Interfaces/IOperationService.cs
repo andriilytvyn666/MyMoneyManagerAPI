@@ -2,7 +2,7 @@ using MyMoneyManager.Api.Models;
 
 namespace MyMoneyManager.Api.Interfaces;
 
-interface IOperationService
+public interface IOperationService
 {
     public Operation Create(Operation operation);
     public Operation Read(Operation operation);

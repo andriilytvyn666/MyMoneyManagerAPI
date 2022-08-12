@@ -2,7 +2,6 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Services;
 
 namespace MyMoneyManager.Api.Controllers;
 
@@ -17,10 +16,10 @@ public class UserController : ControllerBase
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
 
-    public UserController(ILogger<UserController> logger)
+    public UserController(ILogger<UserController> logger, IUserService userService)
     {
         _logger = logger;
-        _userService = UserService.Instance;
+        _userService = userService;
     }
 
     /// <summary>

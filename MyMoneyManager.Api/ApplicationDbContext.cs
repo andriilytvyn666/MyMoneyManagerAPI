@@ -6,7 +6,7 @@ namespace MyMoneyManager.Api;
 /// <summary>
 /// Database context configuration class
 /// </summary>
-public class SqliteDbContext : DbContext
+public class ApplicationDbContext : DbContext
 {
     /// <summary>
     /// Users list representation
@@ -21,13 +21,7 @@ public class SqliteDbContext : DbContext
     /// </summary>
     public DbSet<Operation> Operations { get; set; }
 
-    /// <summary>
-    /// On database configuring event
-    /// </summary>
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        options.UseSqlite("Data Source=./app.db");
-    }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     /// <summary>
     /// On model creating event

@@ -1,18 +1,15 @@
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Storage;
 
 namespace MyMoneyManager.Api.Services;
 
 public class NotebookService : INotebookService
 {
     private INotebookStorage _storage;
-    private static readonly Lazy<NotebookService> _lazy = new(() => new());
-    public static NotebookService Instance { get { return _lazy.Value; } }
 
-    private NotebookService()
+    public NotebookService(INotebookStorage notebookStorage)
     {
-        _storage = SqliteNotebookStorage.Instance;
+        _storage = notebookStorage;
     }
 
     public Notebook Create(Notebook notebook)

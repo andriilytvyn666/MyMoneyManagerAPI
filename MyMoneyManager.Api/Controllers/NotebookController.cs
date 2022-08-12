@@ -2,7 +2,6 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Services;
 
 namespace MyMoneyManager.Api.Controllers;
 
@@ -17,10 +16,10 @@ public class NotebookController : ControllerBase
     private readonly ILogger<UserController> _logger;
     private readonly INotebookService _notebookService;
 
-    public NotebookController(ILogger<UserController> logger)
+    public NotebookController(ILogger<UserController> logger, INotebookService notebookService)
     {
         _logger = logger;
-        _notebookService = NotebookService.Instance;
+        _notebookService = notebookService;
     }
 
     /// <summary>

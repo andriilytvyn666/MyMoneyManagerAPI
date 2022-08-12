@@ -2,7 +2,6 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using MyMoneyManager.Api.Interfaces;
 using MyMoneyManager.Api.Models;
-using MyMoneyManager.Api.Services;
 
 namespace MyMoneyManager.Api.Controllers;
 
@@ -17,10 +16,10 @@ public class OperationController : ControllerBase
     private readonly ILogger<UserController> _logger;
     private readonly IOperationService _operationService;
 
-    public OperationController(ILogger<UserController> logger)
+    public OperationController(ILogger<UserController> logger, IOperationService operationService)
     {
         _logger = logger;
-        _operationService = OperationService.Instance;
+        _operationService = operationService;
     }
 
     /// <summary>

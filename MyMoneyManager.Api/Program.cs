@@ -1,7 +1,11 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using MyMoneyManager.Api.Interfaces;
+using MyMoneyManager.Api.Services;
+using MyMoneyManager.Api.Storage;
 
 namespace MyMoneyManager.Api;
 
@@ -51,17 +55,34 @@ public class Program
                 }
             });
             // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            String xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            String xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
+
+        builder.Services.AddSingleton<IUserService, UserService>();
+        builder.Services.AddSingleton<INotebookService, NotebookService>();
+        builder.Services.AddSingleton<IOperationService, OperationService>();
+
+        builder.Services.AddSingleton<IUserStorage, SqliteUserStorage>();
+        builder.Services.AddSingleton<INotebookStorage, SqliteNotebookStorage>();
+        builder.Services.AddSingleton<IOperationStorage, SqliteOperationStorage>();
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=./app.db"));
 
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwagger(options =>
+                    {
+                        options.RouteTemplate = "{documentname}/swagger.json";
+                    }
+                    );
+            app.UseSwaggerUI(options =>
+            {
+                options.RoutePrefix = "";
+            });
         }
 
         app.UseHttpsRedirection();
