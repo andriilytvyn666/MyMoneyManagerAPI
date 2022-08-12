@@ -1,8 +1,8 @@
-using MyMoneyManagerApi.Interfaces;
-using MyMoneyManagerApi.Models;
-using MyMoneyManagerApi.Storage;
+using MyMoneyManager.Api.Interfaces;
+using MyMoneyManager.Api.Models;
+using MyMoneyManager.Api.Storage;
 
-namespace MyMoneyManagerApi.Services;
+namespace MyMoneyManager.Api.Services;
 
 public class OperationService : IOperationService
 {

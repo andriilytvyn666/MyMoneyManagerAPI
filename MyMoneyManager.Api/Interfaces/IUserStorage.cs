@@ -1,6 +1,6 @@
-namespace MyMoneyManagerApi.Interfaces;
+using MyMoneyManager.Api.Models;
 
-using MyMoneyManagerApi.Models;
+namespace MyMoneyManager.Api.Interfaces;
 
 public interface IUserStorage
 {

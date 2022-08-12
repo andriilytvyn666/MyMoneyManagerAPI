@@ -1,6 +1,6 @@
-using MyMoneyManagerApi.Models;
+using MyMoneyManager.Api.Models;
 
-namespace MyMoneyManagerApi.Interfaces;
+namespace MyMoneyManager.Api.Interfaces;
 
 public interface INotebookStorage
 {

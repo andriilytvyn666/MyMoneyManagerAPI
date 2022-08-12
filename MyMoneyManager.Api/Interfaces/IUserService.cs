@@ -1,8 +1,8 @@
-using MyMoneyManagerApi.Models;
+using MyMoneyManager.Api.Models;
 
-namespace MyMoneyManagerApi.Interfaces;
+namespace MyMoneyManager.Api.Interfaces;
 
-interface IUserService
+public interface IUserService
 {
     public User Create(User user);
     public User Read(User user);

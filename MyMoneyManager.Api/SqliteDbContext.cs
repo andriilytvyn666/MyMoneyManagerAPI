@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using MyMoneyManagerApi.Models;
+using MyMoneyManager.Api.Models;
 
-namespace MyMoneyManagerApi;
+namespace MyMoneyManager.Api;
 
 /// <summary>
 /// Database context configuration class

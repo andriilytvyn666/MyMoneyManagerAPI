@@ -1,9 +1,9 @@
 using System.Reflection;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Any;
 using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 
-namespace MyMoneyManagerApi;
+namespace MyMoneyManager.Api;
 
 /// <summary>
 /// Main application class

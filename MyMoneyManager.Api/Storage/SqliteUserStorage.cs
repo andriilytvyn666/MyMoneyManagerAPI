@@ -1,7 +1,7 @@
-using MyMoneyManagerApi.Interfaces;
-using MyMoneyManagerApi.Models;
+using MyMoneyManager.Api.Interfaces;
+using MyMoneyManager.Api.Models;
 
-namespace MyMoneyManagerApi.Storage;
+namespace MyMoneyManager.Api.Storage;
 
 // TODO: Make all methods async
 public class SqliteUserStorage : IUserStorage

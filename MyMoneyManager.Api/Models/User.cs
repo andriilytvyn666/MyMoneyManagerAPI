@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyMoneyManagerApi.Models;
+namespace MyMoneyManager.Api.Models;
 
 /// <summary>
 /// User privilege levels enum

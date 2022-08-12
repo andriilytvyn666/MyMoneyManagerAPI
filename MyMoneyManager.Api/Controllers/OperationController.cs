@@ -1,10 +1,10 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using MyMoneyManagerApi.Interfaces;
-using MyMoneyManagerApi.Models;
-using MyMoneyManagerApi.Services;
+using MyMoneyManager.Api.Interfaces;
+using MyMoneyManager.Api.Models;
+using MyMoneyManager.Api.Services;
 
-namespace MyMoneyManagerApi.Controllers;
+namespace MyMoneyManager.Api.Controllers;
 
 /// <summary>
 /// Operation API controller

@@ -1,8 +1,8 @@
-using MyMoneyManagerApi.Models;
+using MyMoneyManager.Api.Models;
 
-namespace MyMoneyManagerApi.Interfaces;
+namespace MyMoneyManager.Api.Interfaces;
 
-interface INotebookService
+public interface INotebookService
 {
     public Notebook Create(Notebook notebook);
     public Notebook Read(Notebook notebook);
